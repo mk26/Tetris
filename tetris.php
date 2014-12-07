@@ -16,6 +16,7 @@
 	<body>
 		<div id="maincontainer">
 			<div id="gameboard">
+				<audio loop id="bgscore" src="sounds/bgscore.mp3"></audio>
 				<p id="paused">GAME PAUSED</p>
 				<p id="gameover">GAME OVER</p>
 				<p id="newgame">Press N to start a new game</p>

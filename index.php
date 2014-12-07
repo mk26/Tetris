@@ -24,7 +24,7 @@
  				</form><hr>
  				<br>
 <span>Don't have an account?&nbsp;</span>
-<a href="signup.html" class="buttong">Sign up</a>
+<a href="signup.php" class="buttong">Sign up</a>
 				</center>
 			</div>
 		</div>

@@ -1,7 +1,9 @@
 //GAME LOGIC
 
-var COLS = 10;
-var ROWS = 20;
+var dropSound = new Audio("sounds/drop.mp3");
+var clearSound = new Audio("sounds/clear.mp3");
+var COLS = 12;
+var ROWS = 24;
 var board = [];
 var gameLost;
 var gameBegan = false;
@@ -102,6 +104,8 @@ function tick() {
 
 // stop shape at its position and fix it to board
 function freeze() {
+	//document.getElementById('dropsound').play();
+	dropSound.play();
     for (var y = 0; y < 4; ++y) {
         for (var x = 0; x < 4; ++x) {
             if (current[y][x]) {
@@ -311,6 +315,7 @@ $(document.body).keydown(function(event){
 });
 
 $(document).ready(function(){
+	//$('#bgscore')[0].play();
 	$('#gameover').hide();
 	$('#paused').hide();
 });

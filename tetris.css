@@ -154,6 +154,14 @@ a, input {
 	font-size: large;
 }
 
+input:required:invalid {
+	box-shadow: 0px 0px 5px #ff3434;
+}
+
+input:required:valid {
+	box-shadow: 0px 0px 5px #0dfc31;
+}
+
 .buttonb {
 	background-color: #0f8bd7;
 	color: white;
