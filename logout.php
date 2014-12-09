@@ -1,9 +1,8 @@
-<?php
-session_start();
-function logout()
-{
-  session_destroy();  
-  header("Location:index.php");
-}
-logout();
+<?php session_start();
+	function logout()
+	{
+	  session_destroy();  
+	  header("Location:index.php");
+	}
+	logout();
 ?>

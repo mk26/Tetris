@@ -1,4 +1,5 @@
-<?php session_start();
+<?php 
+	session_start();
 	require_once 'connection.php';
 	
 	function changePassword($oldpass,$newpass,$repassword)
