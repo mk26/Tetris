@@ -1,9 +1,8 @@
 <?php 
 	session_start();
 	require_once 'connection.php';
-	if(!isset($_SESSION['username']))
-	{
-	header("Location:index.php");
+	if(!isset($_SESSION['username'])) {
+		header("Location:index.php");
 	}
 	updateSessionData();
 ?>

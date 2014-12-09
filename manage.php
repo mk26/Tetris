@@ -1,8 +1,7 @@
 <?php 
 	session_start();
-	if(!isset($_SESSION['username']))
-	{
-	header("Location:index.php");
+	if(!isset($_SESSION['username'])) {
+		header("Location:index.php");
 	}
 	require_once 'connection.php';
 ?>
@@ -61,22 +60,22 @@
 			<a href="tetris.php" class="buttonb"><i class="fa fa-angle-left"></i>&nbsp;BACK</a>
 		</div>
 		<script>
-		$(document).ready(function(){
-			if(document.getElementsByClassName("error").length==0) {
-				$('#changepass').hide();
-				$('#resetsureb').hide();
-				$('#delsureb').hide();
-			}
-		});
-		$('#changepassb').click(function(){
-			$('#changepass').toggle();
-		});	
-		$('#delaccb').click(function(){
-			$('#delsureb').toggle();
-		});	
-		$('#resetb').click(function(){
-			$('#resetsureb').toggle();
-		});	
+			$(document).ready(function(){
+				if(document.getElementsByClassName("error").length==0) {
+					$('#changepass').hide();
+					$('#resetsureb').hide();
+					$('#delsureb').hide();
+				}
+			});
+			$('#changepassb').click(function(){
+				$('#changepass').toggle();
+			});	
+			$('#delaccb').click(function(){
+				$('#delsureb').toggle();
+			});	
+			$('#resetb').click(function(){
+				$('#resetsureb').toggle();
+			});	
 	</script>
 	</body>
 </html>

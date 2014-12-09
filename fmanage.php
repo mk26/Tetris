@@ -53,10 +53,11 @@
 			$query = $conn->prepare("DELETE FROM USERS WHERE username = ?");
 			$query->execute(array($_SESSION['username']));
 			session_destroy();
+			echo "<!DOCTYPE html><html><head><title>Account deleted</title></head><body>";
 			echo "<link rel=\"stylesheet\" href=\"tetris.css\" title=\"Tetris\" type=\"text/css\" media=\"screen\" charset=\"utf-8\">";
-			echo "<link rel=\"stylesheet\" href=\"lib/font-awesome.min.css\" title=\"Tetris\" type=\"text/css\" media=\"screen\" charset=\"utf-8\">";
+			echo "<link rel=\"stylesheet\" href=\"frameworks/css/font-awesome.min.css\" title=\"Tetris\" type=\"text/css\" media=\"screen\" charset=\"utf-8\">";
 			echo "<p class=\"success\">Account deleted Successfully</p>";
-			echo "<a href=\"index.php\" class=\"buttonb\"><i class=\"fa fa-home\"></i> GO TO HOME PAGE</a>";
+			echo "<a href=\"index.php\" class=\"buttonb\"><i class=\"fa fa-home\"></i> GO TO HOME PAGE</a></body></html>";
 			updateSessionData();
 	   	}
 		catch (PDOException $error) {
