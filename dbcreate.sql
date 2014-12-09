@@ -11,7 +11,7 @@ USE MKTETRIS;
 CREATE TABLE USERS
 (
 	username varchar(20) NOT NULL,
-  	password varchar(20) NOT NULL,
+  	password TEXT NOT NULL,
   	name varchar(50) NOT NULL,
   	lastscore integer DEFAULT 0,
   	highscore integer DEFAULT 0,
@@ -21,6 +21,6 @@ CREATE TABLE USERS
 
 # CREATE TEST USER
 
-INSERT INTO USERS(username,password,name) VALUES ("test","test","TestUser");
+INSERT INTO USERS(username,password,name) VALUES ("test","$2y$10$j3HwSMewTq0q/q0./oeuEeDrAVuTi41XOdffkUPscjZCTUNjud2Ba","TestUser");
 
 COMMIT;

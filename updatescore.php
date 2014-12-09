@@ -26,6 +26,6 @@ if(isset($_POST['score']))
 updateScore($_POST['score']);
 
 //Test score update
-//updateScore(432);
+//updateScore(123);
 
 ?>

@@ -5,11 +5,11 @@ function authenticate($username, $password)
 {
 	try {
 	global $conn;
-	$query = $conn->prepare("SELECT * FROM USERS WHERE username = ? AND password = ?");
-	$query->execute(array($username, $password));
+	$query = $conn->prepare("SELECT * FROM USERS WHERE username = ?");
+	$query->execute(array($username));
 	$user = $query->fetch(PDO::FETCH_ASSOC);
-				
-    if(!$query || $user==NULL || $username==NULL || $password==NULL) {
+	$hash = $user['password'];
+    if(!$query || $user==NULL || $username==NULL || $password==NULL || password_verify($password, $hash)==false) {
 		header("Location: index.php"."?login=failed");
     }
     else 
