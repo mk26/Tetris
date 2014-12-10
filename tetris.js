@@ -36,45 +36,50 @@ var endSound = new Howl({
 
 /* Global Variables */
 
+//Game board related parameters
 var board = [];
 var columns = 12;
 var rows = 24;
 var blockWidth = $('#board').width() / columns;
 var blockHeight = $('#board').height() / rows;
 
+//Represents the type and position of the dropping block
 var current;
 var currentX;
 var currentY;
 
-var tetrominoes = [
-    [1, 1, 1, 1],
-    [1, 1, 1, 0,
-     1],
-    [1, 1, 1, 0,
+//tetrimino shape configurations and colors
+var tetriminoes = [
+    [1, 1, 1, 1],	//I
+    [1, 1, 1, 0,	//J
      0, 0, 1],
-    [1, 1, 0, 0,
+    [1, 1, 1, 0,	//L
+     1],
+    [1, 1, 0, 0,	//O
      1, 1],
-    [1, 1, 0, 0,
-     0, 1, 1],
-    [0, 1, 1, 0,
+    [0, 1, 1, 0,	//S
      1, 1],
-    [0, 1, 0, 0,
-     1, 1, 1]
+    [0, 1, 0, 0,	//T
+     1, 1, 1],
+    [1, 1, 0, 0,	//Z
+     0, 1, 1]
 ];
 var colors = [
-    'cyan', 'orange', 'blue', 'yellow', 'red', 'green', 'purple'
+    'cyan', 'blue', 'darkorange', 'yellow', 'green', 'darkmagenta', 'red'
 ];
 
+//Game state parameters
 var score = 0;
 var gameLost = false;
 var gameBegan = false;
 var isPaused = false;
 
+//Canvas to draw on
 var context = $('#board')[0].getContext("2d");
-var tickInterval = setInterval(tick, 400);
-var renderInterval = setInterval(render, 30);
+var dropRate;
+var drawRate;
 
-function shuffleArray(array) {
+/*function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = array[i];
@@ -82,22 +87,23 @@ function shuffleArray(array) {
         array[j] = temp;
     }
     return array;
-}
+}*/
 
-// creates a new 4x4 shape in global variable 'current'
-// 4x4 so as to cover the size when the shape is rotated
+/* Game Logic */
+
+//Create new tetrimino shape
 function newShape() {
-    var id = Math.floor(Math.random() * tetrominoes.length);
-    var shape = tetrominoes[id]; // maintain id for color filling
+    var type = Math.floor(Math.random() * tetriminoes.length);
+    var shape = tetriminoes[type];
 
     current = [];
 
-    for (var y = 0; y < 4; ++y) {
+    for (var y = 0; y < 4; y++) {
         current[y] = [];
-        for (var x = 0; x < 4; ++x) {
+        for (var x = 0; x < 4; x++) {
             var i = 4 * y + x;
             if (typeof shape[i] != 'undefined' && shape[i]) {
-                current[y][x] = id + 1;
+                current[y][x] = type + 1;
             } else {
                 current[y][x] = 0;
             }
@@ -110,29 +116,29 @@ function newShape() {
         //handleKey('rotate');
     }
 
-    //Entry point of tetrominoes
+    //Entry point of tetriminoes
     currentX = Math.floor((Math.random() * 6) + 2);
     currentY = 0;
 }
 
-// clears the board
+//Clear board
 function init() {
-    for (var y = 0; y < rows; ++y) {
+    for (var y = 0; y < rows; y++) {
         board[y] = [];
-        for (var x = 0; x < columns; ++x) {
+        for (var x = 0; x < columns; x++) {
             board[y][x] = 0;
         }
     }
 }
 
-// keep the element moving down, creating new tetrominoes and clearing lines
-function tick() {
-    if (valid(0, 1)) {
-        ++currentY;
+//Keep current shape falling down and clear lines if necessary
+function drop() {
+    if (isValid(0, 1)) {
+        currentY++;
     }
     // if the element settled
     else {
-        freeze();
+        settle();
         clearLines();
         if (gameLost) {
             gameOver();
@@ -142,12 +148,11 @@ function tick() {
     }
 }
 
-// stop shape at its position and fix it to board
-function freeze() {
-    //document.getElementById('dropsound').play();
+//Freeze shape in board
+function settle() {
     dropSound.play();
-    for (var y = 0; y < 4; ++y) {
-        for (var x = 0; x < 4; ++x) {
+    for (var y = 0; y < 4; y++) {
+        for (var x = 0; x < 4; x++) {
             if (current[y][x]) {
                 board[y + currentY][x + currentX] = current[y][x];
                 if (!gameLost) score = score + current[y][x];
@@ -159,23 +164,23 @@ function freeze() {
     });
 }
 
-// returns rotates the rotated shape 'current' perpendicularly anticlockwise
+//Rotate shape anticlockwise
 function rotate(current) {
-    var newCurrent = [];
-    for (var y = 0; y < 4; ++y) {
-        newCurrent[y] = [];
-        for (var x = 0; x < 4; ++x) {
-            newCurrent[y][x] = current[3 - x][y];
+    var rotated = [];
+    for (var y = 0; y < 4; y++) {
+        rotated[y] = [];
+        for (var x = 0; x < 4; x++) {
+            rotated[y][x] = current[3 - x][y];
         }
     }
-    return newCurrent;
+    return rotated;
 }
 
-// check if any lines are filled and clear them
+//Clear line if no gaps remain
 function clearLines() {
     for (var y = rows - 1; y >= 0; --y) {
         var rowFilled = true;
-        for (var x = 0; x < columns; ++x) {
+        for (var x = 0; x < columns; x++) {
             if (board[y][x] == 0) {
                 rowFilled = false;
                 break;
@@ -185,31 +190,35 @@ function clearLines() {
             score = score + 200;
             $('#score').html(score);
             clearSound.play();
-            for (var yy = y; yy > 0; --yy) {
-                for (var x = 0; x < columns; ++x) {
-                    board[yy][x] = board[yy - 1][x];
+            for (var z = y; z > 0; z--) {
+                for (var x = 0; x < columns; x++) {
+                    board[z][x] = board[z - 1][x];
                 }
             }
-            ++y;
+            y++;
         }
     }
 }
 
-
-// checks if the resulting position of current shape will be feasible
-function valid(offsetX, offsetY, newCurrent) {
+//Check if shape can be placed properly
+function isValid(offsetX, offsetY, rotated) {
     offsetX = offsetX || 0;
     offsetY = offsetY || 0;
     offsetX = currentX + offsetX;
     offsetY = currentY + offsetY;
-    newCurrent = newCurrent || current;
+    rotated = rotated || current;
 
-    for (var y = 0; y < 4; ++y) {
-        for (var x = 0; x < 4; ++x) {
-            if (newCurrent[y][x]) {
-                if (typeof board[y + offsetY] == 'undefined' || typeof board[y + offsetY][x + offsetX] == 'undefined' || board[y + offsetY][x + offsetX] || x + offsetX < 0 || y + offsetY >= rows || x + offsetX >= columns) {
+    for (var y = 0; y < 4; y++) {
+        for (var x = 0; x < 4; x++) {
+            if (rotated[y][x]) {
+                if (typeof board[y + offsetY] == 'undefined' 
+                || typeof board[y + offsetY][x + offsetX] == 'undefined' 
+                || board[y + offsetY][x + offsetX] 
+                || x + offsetX < 0 
+                || y + offsetY >= rows 
+                || x + offsetX >= columns) {
                     if (offsetY == 1)
-                        gameLost = true; // gameLost if the current shape at the top row when checked
+                        gameLost = true; 
                     return false;
                 }
             }
@@ -218,39 +227,37 @@ function valid(offsetX, offsetY, newCurrent) {
     return true;
 }
 
-//GAME RENDER
-// draw a single square at (x, y)
+/* Game Display */
+
+//Draws a single block within a tetrimino
 function drawBlock(x, y) {
     context.fillRect(blockWidth * x, blockHeight * y, blockWidth - 1, blockHeight - 1);
 }
 
-// draws the board and the moving shape
-function render() {
+//Overall rendering of the board and the tetriminoes on screen
+function draw() {
     context.clearRect(0, 0, $('#board').width(), $('#board').height());
-
-    //settled
-    for (var x = 0; x < columns; ++x) {
-        for (var y = 0; y < rows; ++y) {
+    //Settled blocks
+    for (var x = 0; x < columns; x++) {
+        for (var y = 0; y < rows; y++) {
             if (board[y][x]) {
                 context.fillStyle = colors[board[y][x] - 1];
                 drawBlock(x, y);
             }
         }
     }
-
-    //moving
-    for (var y = 0; y < 4; ++y) {
-        for (var x = 0; x < 4; ++x) {
+    //Moving shapes
+    for (var y = 0; y < 4; y++) {
+        for (var x = 0; x < 4; x++) {
             if (current[y][x]) {
                 context.fillStyle = colors[current[y][x] - 1];
                 drawBlock(currentX + x, currentY + y);
             }
         }
     }
-
 }
 
-//GAME CONTROLS
+/* Game Controls */
 
 function newGame() {
     if ($('#musicswitch').is(':checked')) bgSound.stop().play();
@@ -260,15 +267,13 @@ function newGame() {
 	    pauseSound.mute(false);
 	    endSound.mute(false);
 	}
-	
-    clearInterval(tickInterval);
-    clearInterval(renderInterval);
-    shuffleArray(colors);
+    clearInterval(dropRate);
+    clearInterval(drawRate);
+    //shuffleArray(colors);
     $('#newgame').hide();
     $('#gameover').hide();
     $("#board").css({
         "-webkit-animation": "blurout 1s forwards",
-        "-moz-animation": "blurout 1s forwards",
         "animation": "blurout 1s forwards"
     });
     init();
@@ -276,30 +281,28 @@ function newGame() {
     gameLost = false;
     score = 0;
     $('#score').html(score);
-    tickInterval = setInterval(tick, 400);
-    renderInterval = setInterval(render, 30);
+    dropRate = setInterval(drop, 400);
+    drawRate = setInterval(draw, 30);
 }
 
 function pauseGame() {
     if (isPaused == false) {
         pauseSound.play();
-        clearInterval(tickInterval);
+        clearInterval(dropRate);
         isPaused = true;
         if ($('#musicswitch').is(':checked')) bgSound.fade(0.5, 0.0, 500);
         $('#paused').show();
         $("#board").css({
             "-webkit-animation": "blurin 1s forwards",
-            "-moz-animation": "blurin 1s forwards",
             "animation": "blurin 1s forwards"
         });
     } else {
-        tickInterval = setInterval(tick, 400);
+        dropRate = setInterval(drop, 400);
         isPaused = false;
         if ($('#musicswitch').is(':checked')) bgSound.play();
         $('#paused').hide();
         $("#board").css({
             "-webkit-animation": "blurout 1s forwards",
-            "-moz-animation": "blurout 1s forwards",
             "animation": "blurout 1s forwards"
         });
     }
@@ -308,39 +311,39 @@ function pauseGame() {
 function gameOver() {
     bgSound.fade(0.5, 0.0, 500);
     endSound.play();
-    clearInterval(tickInterval);
-    clearInterval(renderInterval);
+    clearInterval(dropRate);
+    clearInterval(drawRate);
     $.post("updatescore.php", "score=" + score, function (data) {
         $("#statsinfo").html(data);
     });
     $("#board").css({
         "-webkit-animation": "blurin 1s forwards",
-        "-moz-animation": "blurin 1s forwards",
         "animation": "blurin 1s forwards"
     });
     $('#gameover').show();
 }
 
+//Handle key presses by player
 function handleKey(key) {
     switch (key) {
     case 'left':
-        if (valid(-1) && isPaused == false && !gameLost) {
-            --currentX;
+        if (isValid(-1) && isPaused == false && !gameLost) {
+            currentX--;
         }
         break;
     case 'right':
-        if (valid(1) && isPaused == false && !gameLost) {
-            ++currentX;
+        if (isValid(1) && isPaused == false && !gameLost) {
+            currentX++;
         }
         break;
     case 'down':
-        if (valid(0, 1) && isPaused == false && !gameLost) {
-            ++currentY;
+        if (isValid(0, 1) && isPaused == false && !gameLost) {
+            currentY++;
         }
         break;
     case 'rotate':
         var rotated = rotate(current);
-        if (valid(0, 0, rotated) && isPaused == false && !gameLost) {
+        if (isValid(0, 0, rotated) && isPaused == false && !gameLost) {
             current = rotated;
         }
         break;
@@ -365,6 +368,7 @@ function handleKey(key) {
     }
 }
 
+//Setup the game environment
 $(document.body).keydown(function (event) {
     var pressedKey = event.keyCode;
     var controlKeys = {
@@ -378,7 +382,7 @@ $(document.body).keydown(function (event) {
     };
     if (pressedKey in controlKeys) {
         handleKey(controlKeys[pressedKey]);
-        render();
+        draw();
     }
 });
 
@@ -386,6 +390,10 @@ $('#musicswitch').click(function () {
     if ($('#musicswitch').is(':checked')) bgSound.play();
     else bgSound.stop();
 });
+
+$('#helpb').click(function(){
+	$('#helpcontainer').toggle();
+});	
 
 $('#soundswitch').click(function () {
     if ($('#soundswitch').is(':checked')) {
@@ -405,4 +413,5 @@ $('#soundswitch').click(function () {
 $(document).ready(function () {
     $('#gameover').hide();
     $('#paused').hide();
+    $('#helpcontainer').hide();
 });

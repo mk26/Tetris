@@ -36,13 +36,31 @@
 				<p style="font-size: small">LAST ~ HIGH ~ PLAYS</p>
 				<p id="statsinfo"><?php echo $_SESSION['userinfo']['lastscore']." | ".$_SESSION['userinfo']['highscore']." | ".$_SESSION['userinfo']['plays'];?></p>
 				</div>
-				<hr><center>
+				<hr>
+				<center>
 				<input type="checkbox" id="musicswitch" value="sound" checked>
 				<label id="musiclabel" for="musicswitch"><i class="fa fa-music"></i>&nbsp;</label> 
 				<input type="checkbox" id="soundswitch" value="sound" checked>
 				<label id="soundlabel" for="soundswitch"><i class="fa fa-bell-o"></i>&nbsp;</label>
 				</center>
 				<hr>
+				<div id="helpcontainer">
+					<center>
+					<div class="key"><i class="fa fa-long-arrow-up"></i></div>
+					<span>Rotate</span>
+					<div class="key"><i class="fa fa-long-arrow-down"></i></div>
+					<span>Drop</span>
+					<div class="key"><i class="fa fa-long-arrow-left"></i></div>
+					<span>Move left</span>
+					<div class="key"><i class="fa fa-long-arrow-right"></i></div>
+					<span>Move right</span><br><br>
+					<span class="key">&nbsp;&nbsp;n&nbsp;&nbsp;</span>
+					<span class="key">&nbsp;&nbsp;p&nbsp;&nbsp;</span>
+					<span class="key">&nbsp;&nbsp;e&nbsp;&nbsp;</span><br>
+					<span style="font-size:small;">New&nbsp;&nbsp;Pause&nbsp;&nbsp;End</span>
+					</center>
+					<hr>
+				</div>
 				<a id="helpb"><i class="fa fa-info-circle"></i>&nbsp;Help</a>
 			</div>
 		</div>
