@@ -11,6 +11,7 @@
 	<head>
 		<title>Tetris</title>
 		<script src="frameworks/js/jquery-2.1.1.js" charset="utf-8"></script>
+		<script src="frameworks/js/paper.js" charset="utf-8"></script>
 		<link rel="stylesheet" href="tetris.css" title="Tetris" type="text/css" media="screen" charset="utf-8">
 		<link rel="stylesheet" href="frameworks/css/font-awesome.min.css" title="Tetris" type="text/css" media="screen" charset="utf-8">
 		<script src="frameworks/js/howler.js" charset="utf-8"></script>
