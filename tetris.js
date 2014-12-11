@@ -79,16 +79,6 @@ var context = $('#board')[0].getContext("2d");
 var dropRate;
 var drawRate;
 
-/*function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-    return array;
-}*/
-
 /* Game Logic */
 
 //Create new tetrimino shape
@@ -111,7 +101,7 @@ function newShape() {
     }
 
     //Rotate randomly 
-    var autoRotate = Math.floor((Math.random() * 5));
+    var autoRotate = Math.floor((Math.random() * 4));
     for (var i = 0; i < autoRotate; i++) {
         //handleKey('rotate');
     }
@@ -136,20 +126,21 @@ function drop() {
     if (isValid(0, 1)) {
         currentY++;
     }
-    // if the element settled
     else {
-        settle();
-        clearLines();
-        if (gameLost) {
+		if (gameLost) {
             gameOver();
             return false;
         }
+        settle();
+        clearLines();
         newShape();
     }
 }
 
 //Freeze shape in board
 function settle() {
+	clearInterval(dropRate);
+	dropRate = setInterval(drop, 400);
     dropSound.play();
     for (var y = 0; y < 4; y++) {
         for (var x = 0; x < 4; x++) {
@@ -217,8 +208,9 @@ function isValid(offsetX, offsetY, rotated) {
                 || x + offsetX < 0 
                 || y + offsetY >= rows 
                 || x + offsetX >= columns) {
-                    if (offsetY == 1)
+                    if (offsetY == 1) {
                         gameLost = true; 
+                    }
                     return false;
                 }
             }
@@ -230,7 +222,8 @@ function isValid(offsetX, offsetY, rotated) {
 /* Game Display */
 
 //Draws a single block within a tetrimino
-function drawBlock(x, y) {
+function drawBlock(x, y, color) {
+	context.fillStyle = color;
     context.fillRect(blockWidth * x, blockHeight * y, blockWidth - 1, blockHeight - 1);
 }
 
@@ -241,8 +234,7 @@ function draw() {
     for (var x = 0; x < columns; x++) {
         for (var y = 0; y < rows; y++) {
             if (board[y][x]) {
-                context.fillStyle = colors[board[y][x] - 1];
-                drawBlock(x, y);
+                drawBlock(x, y, colors[board[y][x] - 1]);
             }
         }
     }
@@ -250,8 +242,7 @@ function draw() {
     for (var y = 0; y < 4; y++) {
         for (var x = 0; x < 4; x++) {
             if (current[y][x]) {
-                context.fillStyle = colors[current[y][x] - 1];
-                drawBlock(currentX + x, currentY + y);
+                drawBlock(currentX + x, currentY + y, colors[current[y][x] - 1]);
             }
         }
     }
@@ -269,7 +260,6 @@ function newGame() {
 	}
     clearInterval(dropRate);
     clearInterval(drawRate);
-    //shuffleArray(colors);
     $('#newgame').hide();
     $('#gameover').hide();
     $("#board").css({
@@ -282,7 +272,7 @@ function newGame() {
     score = 0;
     $('#score').html(score);
     dropRate = setInterval(drop, 400);
-    drawRate = setInterval(draw, 30);
+    drawRate = setInterval(draw, 10);
 }
 
 function pauseGame() {
@@ -309,10 +299,10 @@ function pauseGame() {
 }
 
 function gameOver() {
+	clearInterval(dropRate);
+    clearInterval(drawRate);
     bgSound.fade(0.5, 0.0, 500);
     endSound.play();
-    clearInterval(dropRate);
-    clearInterval(drawRate);
     $.post("updatescore.php", "score=" + score, function (data) {
         $("#statsinfo").html(data);
     });
@@ -339,6 +329,12 @@ function handleKey(key) {
     case 'down':
         if (isValid(0, 1) && isPaused == false && !gameLost) {
             currentY++;
+        }
+        break;
+    case 'fall':
+        if (isValid(0, 1) && isPaused == false && !gameLost) {
+			clearInterval(dropRate);
+			dropRate = setInterval(drop, 10);
         }
         break;
     case 'rotate':
@@ -368,13 +364,14 @@ function handleKey(key) {
     }
 }
 
-//Setup the game environment
-$(document.body).keydown(function (event) {
+//Setup the game environment and controls
+$(document).keydown(function (event) {
     var pressedKey = event.keyCode;
     var controlKeys = {
         37: 'left',
         39: 'right',
         40: 'down',
+        32: 'fall',
         38: 'rotate',
         80: 'pause',
         78: 'new',
@@ -386,7 +383,16 @@ $(document.body).keydown(function (event) {
     }
 });
 
-$('#musicswitch').click(function () {
+$(document).keyup(function (event) {
+	if(event.keyCode==32) {
+		if(isPaused == false && !gameLost) {
+	      	clearInterval(dropRate);
+		  	dropRate = setInterval(drop, 400);
+        }
+	}
+});
+
+$('#musicswitch').click(function(){
     if ($('#musicswitch').is(':checked')) bgSound.play();
     else bgSound.stop();
 });
