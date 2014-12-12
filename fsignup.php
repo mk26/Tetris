@@ -23,6 +23,7 @@
 		    }
 			else
 			{
+				//Hashes the password for extra safety
 				$hash = password_hash($password, PASSWORD_DEFAULT);
 			 	$insquery = $conn->prepare("INSERT INTO USERS(username,password,name) VALUES (?, ?, ?)");
 				$insquery->execute(array($username,$hash,$name));

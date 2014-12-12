@@ -20,6 +20,7 @@
 	    echo $error->getMessage();
 	}
 	
+	//Getting user data
 	function updateSessionData()
 	{
 		global $conn;

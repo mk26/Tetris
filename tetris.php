@@ -29,7 +29,7 @@
 			<div id="sidebar">
 				<div id="userheader">
 				<span class="username"><?php echo "<a id=\"managelink\" alt=\"Manage account\" href=manage.php>".explode(' ', $_SESSION['name'])[0]."</a>";?></span>
-				<a href="logout.php" id="logoutb"><i class="fa fa-sign-out"></i>&nbsp;LOGOUT</a></div>
+				<a href="flogout.php" id="logoutb"><i class="fa fa-sign-out"></i>&nbsp;LOGOUT</a></div>
 				<hr>
 				<p>Score &nbsp;<span id="score">~</span></p>
 				<hr>
